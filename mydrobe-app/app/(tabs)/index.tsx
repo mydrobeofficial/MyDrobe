@@ -1,47 +1,44 @@
-import React, { useState } from 'react';
-import {
-  View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, SafeAreaView, StatusBar
-} from 'react-native';
+import { CormorantGaramond_400Regular_Italic, CormorantGaramond_600SemiBold } from "@expo-google-fonts/cormorant-garamond";
+import { Syne_600SemiBold, Syne_700Bold, Syne_800ExtraBold, useFonts } from "@expo-google-fonts/syne";
+import React, { useState } from "react";
+import { ActivityIndicator, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const T = {
-  bg:      '#F7F5F0',
-  surface: '#FFFFFF',
-  card:    '#FAFAF7',
-  border:  '#E8E4DC',
-  ink:     '#1A1814',
-  muted:   '#9B9690',
-  lime:    '#3DFF8E',
-  tag:     '#F0EDE6',
-};
+const T = { bg: "#F7F5F0", surface: "#FFFFFF", card: "#FAFAF8", border: "#E8E4DC", ink: "#1A1814", muted: "#9B9690", lime: "#3DFF8E", tag: "#F0EDE6" };
 
-const SAMPLE_WARDROBES = [
-  { id: '1', name: 'Uni Fits',  count: 14, privacy: 'Private', colors: ['#FFD166','#FF6B9D','#74C0FC'] },
-  { id: '2', name: 'Going Out', count: 8,  privacy: 'Friends', colors: ['#B197FC','#63E6BE','#FFD166'] },
-  { id: '3', name: 'Winter 24', count: 22, privacy: 'Private', colors: ['#74C0FC','#FF6B9D','#B197FC'] },
-  { id: '4', name: 'Everyday',  count: 31, privacy: 'Public',  colors: ['#63E6BE','#FFD166','#FF6B9D'] },
+const WARDROBES = [
+  { id: "1", name: "Uni Fits",  count: 14, privacy: "Private", colors: ["#4f4d49","#696256","#918978"] },
+  { id: "2", name: "Going Out", count: 8,  privacy: "Friends", colors: ["#1A1814","#2E2B26","#444038"] },
+  { id: "3", name: "Winter 24", count: 22, privacy: "Private", colors: ["#352517","#4d3b18","#685e4b"] },
+  { id: "4", name: "Everyday",  count: 31, privacy: "Public",  colors: ["#3c2c19","#645638","#aaa69e"] },
 ];
 
 function StickerFan({ colors }) {
+  const angles = [-12, 0, 12];
   return (
-    <View style={styles.fanContainer}>
+    <View style={styles.fanWrap}>
       {colors.map((color, i) => (
-        <View key={i} style={[styles.fanSticker, { backgroundColor: color, transform: [{ rotate: `${(i - 1) * 8}deg` }], zIndex: i, left: i * 6 }]} />
+        <View key={i} style={[styles.sticker, {
+          backgroundColor: color,
+          transform: [{ rotate: angles[i] + "deg" }],
+          zIndex: i + 1,
+        }]} />
       ))}
     </View>
   );
 }
 
-function WardrobeCard({ wardrobe, onPress }) {
+function WardrobeCard({ w }) {
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.85}>
-      <StickerFan colors={wardrobe.colors} />
-      <View style={styles.cardBottom}>
-        <Text style={styles.cardName}>{wardrobe.name}</Text>
-        <View style={styles.cardMeta}>
-          <Text style={styles.cardCount}>{wardrobe.count} fits</Text>
-          <View style={styles.privacyPill}>
-            <Text style={styles.privacyText}>{wardrobe.privacy}</Text>
+    <TouchableOpacity style={styles.card} activeOpacity={0.82}>
+      <View style={styles.fanArea}>
+        <StickerFan colors={w.colors} />
+      </View>
+      <View style={styles.cardBody}>
+        <Text style={styles.cardName}>{w.name}</Text>
+        <View style={styles.cardRow}>
+          <Text style={styles.cardCount}>{w.count} fits</Text>
+          <View style={[styles.pill, w.privacy === "Public" && styles.pillPublic]}>
+            <Text style={[styles.pillText, w.privacy === "Public" && styles.pillTextPublic]}>{w.privacy}</Text>
           </View>
         </View>
       </View>
@@ -50,37 +47,91 @@ function WardrobeCard({ wardrobe, onPress }) {
 }
 
 export default function HomeScreen() {
-  const [wardrobes] = useState(SAMPLE_WARDROBES);
+  const [wardrobes] = useState(WARDROBES);
+
+  const [fontsLoaded] = useFonts({
+    Syne_800ExtraBold,
+    Syne_700Bold,
+    Syne_600SemiBold,
+    CormorantGaramond_400Regular_Italic,
+    CormorantGaramond_600SemiBold,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: T.bg }}>
+        <ActivityIndicator color={T.lime} />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" />
-      <View style={styles.topBar}>
-        <Text style={styles.wordmark}>MyDrobe</Text>
+      <StatusBar barStyle="dark-content" backgroundColor={T.surface} />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+  <Text style={styles.wordmark}>MyDrobe</Text>
+  <View style={{ backgroundColor: "#3DFF8E", borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3 }}>
+    <Text style={{ fontFamily: "Syne_700Bold", fontSize: 10, color: "#1A1814", letterSpacing: 0.5 }}>PHASE 1</Text>
+  </View>
+</View>
+<Text style={styles.tagline}>your wardrobe, made seen.</Text>
+         
+         
+        </View>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>M</Text>
+          <Text style={styles.avatarLetter}>M</Text>
         </View>
       </View>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.sectionLabel}>MY WARDROBES</Text>
+
+      {/* Content */}
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollInner} showsVerticalScrollIndicator={false}>
+
+        {/* Section header */}
+        <View style={styles.sectionRow}>
+          <Text style={styles.sectionLabel}>MY WARDROBES</Text>
+          <View style={styles.limeBadge}>
+            <Text style={styles.limeBadgeText}>{WARDROBES.length} total</Text>
+          </View>
+        </View>
+
         <View style={styles.grid}>
-          {wardrobes.map(w => (
-            <WardrobeCard key={w.id} wardrobe={w} onPress={() => {}} />
-          ))}
+          {wardrobes.map(w => <WardrobeCard key={w.id} w={w} />)}
           <TouchableOpacity style={styles.newCard} activeOpacity={0.7}>
-            <Text style={styles.newCardPlus}>+</Text>
-            <Text style={styles.newCardLabel}>New Wardrobe</Text>
+            <Text style={styles.newPlus}>+</Text>
+            <Text style={styles.newLabel}>New Wardrobe</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Streak nudge */}
+        <View style={styles.streakCard}>
+          <View style={styles.streakLeft}>
+            <Text style={styles.streakEmoji}>🔥</Text>
+            <View>
+              <Text style={styles.streakTitle}>Start your streak</Text>
+              <Text style={styles.streakSub}>Add your first outfit today</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.streakBtn}>
+            <Text style={styles.streakBtnText}>Add fit</Text>
+          </TouchableOpacity>
+        </View>
+
       </ScrollView>
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>⊞</Text>
-          <Text style={[styles.navLabel, styles.navActive]}>Wardrobe</Text>
+
+      {/* Bottom Nav */}
+      <View style={styles.nav}>
+        <TouchableOpacity style={styles.navBtn}>
+          <Text style={styles.navIconActive}>▦</Text>
+          <Text style={styles.navLabelActive}>Wardrobe</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addFab}>
-          <Text style={styles.addFabText}>＋</Text>
+        <TouchableOpacity style={styles.fab}>
+          <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity style={styles.navBtn}>
           <Text style={styles.navIcon}>◉</Text>
           <Text style={styles.navLabel}>Profile</Text>
         </TouchableOpacity>
@@ -90,32 +141,47 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe:          { flex: 1, backgroundColor: '#FFFFFF' },
-  topBar:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#E8E4DC', backgroundColor: '#FFFFFF' },
-  wordmark:      { fontSize: 22, fontWeight: '800', color: '#1A1814', letterSpacing: -0.5 },
-  avatar:        { width: 32, height: 32, borderRadius: 16, backgroundColor: '#3DFF8E', justifyContent: 'center', alignItems: 'center' },
-  avatarText:    { fontSize: 13, fontWeight: '700', color: '#1A1814' },
-  scroll:        { flex: 1, backgroundColor: '#F7F5F0' },
-  scrollContent: { padding: 16, paddingBottom: 100 },
-  sectionLabel:  { fontSize: 10, fontWeight: '700', color: '#9B9690', letterSpacing: 1.4, marginBottom: 12 },
-  grid:          { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  card:          { width: '47.5%', backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E8E4DC', overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
-  fanContainer:  { height: 120, backgroundColor: '#FAFAF7', justifyContent: 'center', alignItems: 'center', position: 'relative' },
-  fanSticker:    { position: 'absolute', width: 60, height: 80, borderRadius: 10 },
-  cardBottom:    { padding: 12 },
-  cardName:      { fontSize: 13, fontWeight: '700', color: '#1A1814', marginBottom: 6 },
-  cardMeta:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  cardCount:     { fontSize: 11, color: '#9B9690' },
-  privacyPill:   { backgroundColor: '#F0EDE6', borderRadius: 20, paddingHorizontal: 8, paddingVertical: 2 },
-  privacyText:   { fontSize: 9, fontWeight: '600', color: '#9B9690' },
-  newCard:       { width: '47.5%', backgroundColor: '#FAFAF7', borderRadius: 16, borderWidth: 1.5, borderColor: '#E8E4DC', borderStyle: 'dashed', height: 160, justifyContent: 'center', alignItems: 'center' },
-  newCardPlus:   { fontSize: 28, color: '#9B9690', marginBottom: 4 },
-  newCardLabel:  { fontSize: 12, color: '#9B9690', fontWeight: '600' },
-  bottomNav:     { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 10, paddingBottom: 24, borderTopWidth: 1, borderTopColor: '#E8E4DC', backgroundColor: '#FFFFFF' },
-  navItem:       { alignItems: 'center', flex: 1 },
-  navIcon:       { fontSize: 20, color: '#9B9690', marginBottom: 2 },
-  navLabel:      { fontSize: 10, color: '#9B9690', fontWeight: '600' },
-  navActive:     { color: '#1A1814' },
-  addFab:        { width: 56, height: 56, borderRadius: 28, backgroundColor: '#1A1814', justifyContent: 'center', alignItems: 'center' },
-  addFabText:    { fontSize: 28, color: '#3DFF8E', lineHeight: 32 },
+  safe: { flex: 1, backgroundColor: "#FFFFFF" },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 22, paddingTop: 18, paddingBottom: 14, backgroundColor: "#FFFFFF", borderBottomWidth: 1, borderBottomColor: "#E8E4DC" },
+  wordmark: { fontFamily: "Syne_800ExtraBold", fontSize: 28, color: "#1A1814", letterSpacing: -1 },
+  tagline: { fontFamily: "CormorantGaramond_400Regular_Italic", fontSize: 13, color: "#9B9690", marginTop: 1 },
+  avatar: { width: 38, height: 38, borderRadius: 19, backgroundColor: "#3DFF8E", justifyContent: "center", alignItems: "center" },
+  avatarLetter: { fontFamily: "Syne_800ExtraBold", fontSize: 15, color: "#1A1814" },
+  scroll: { flex: 1, backgroundColor: "#F7F5F0" },
+  scrollInner: { padding: 18, paddingBottom: 110 },
+  sectionRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 },
+  sectionLabel: { fontFamily: "Syne_700Bold", fontSize: 10, color: "#9B9690", letterSpacing: 1.6 },
+  limeBadge: { backgroundColor: "#3DFF8E30", borderRadius: 20, paddingHorizontal: 10, paddingVertical: 3 },
+  limeBadgeText: { fontFamily: "Syne_600SemiBold", fontSize: 10, color: "#00A854" },
+  grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", gap: 14, marginBottom: 20 },
+  card: { width: "48%", backgroundColor: "#FFFFFF", borderRadius: 18, borderWidth: 1, borderColor: "#E8E4DC", overflow: "hidden", shadowColor: "#1A1814", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 10, elevation: 3 },
+  fanArea: { height: 140, backgroundColor: "#FAFAF8", justifyContent: "center", alignItems: "center" },
+  fanWrap: { width: 100, height: 110, position: "relative", justifyContent: "center", alignItems: "center" },
+  sticker: { position: "absolute", width: 68, height: 90, borderRadius: 14, shadowColor: "#000", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.15, shadowRadius: 6 },
+  cardBody: { padding: 13 },
+  cardName: { fontFamily: "Syne_700Bold", fontSize: 14, color: "#1A1814", marginBottom: 7, letterSpacing: -0.2 },
+  cardRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  cardCount: { fontFamily: "Syne_600SemiBold", fontSize: 11, color: "#9B9690" },
+  pill: { backgroundColor: "#F0EDE6", borderRadius: 20, paddingHorizontal: 9, paddingVertical: 3 },
+  pillPublic: { backgroundColor: "#3DFF8E30" },
+  pillText: { fontFamily: "Syne_600SemiBold", fontSize: 9, color: "#9B9690", letterSpacing: 0.3 },
+  pillTextPublic: { color: "#00A854" },
+  newCard: { width: "48%", height: 195, backgroundColor: "#FAFAF8", borderRadius: 18, borderWidth: 1.5, borderColor: "#E8E4DC", borderStyle: "dashed", justifyContent: "center", alignItems: "center" },
+  newPlus: { fontSize: 30, color: "#9B9690", marginBottom: 6, fontWeight: "300" },
+  newLabel: { fontFamily: "Syne_600SemiBold", fontSize: 12, color: "#9B9690", letterSpacing: 0.2 },
+  streakCard: { backgroundColor: "#FFFFFF", borderRadius: 16, borderWidth: 1, borderColor: "#E8E4DC", padding: 16, flexDirection: "row", alignItems: "center", justifyContent: "space-between", shadowColor: "#1A1814", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8 },
+  streakLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
+  streakEmoji: { fontSize: 28 },
+  streakTitle: { fontFamily: "Syne_700Bold", fontSize: 13, color: "#1A1814", marginBottom: 2 },
+  streakSub: { fontFamily: "CormorantGaramond_400Regular_Italic", fontSize: 13, color: "#9B9690" },
+  streakBtn: { backgroundColor: "#1A1814", borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8 },
+  streakBtnText: { fontFamily: "Syne_700Bold", fontSize: 11, color: "#3DFF8E", letterSpacing: 0.3 },
+  nav: { flexDirection: "row", justifyContent: "space-around", alignItems: "center", paddingTop: 12, paddingBottom: Platform.OS === "ios" ? 28 : 16, paddingHorizontal: 24, borderTopWidth: 1, borderTopColor: "#E8E4DC", backgroundColor: "#FFFFFF" },
+  navBtn: { alignItems: "center", flex: 1 },
+  navIcon: { fontSize: 22, color: "#9B9690", marginBottom: 3 },
+  navIconActive: { fontSize: 22, color: "#1A1814", marginBottom: 3 },
+  navLabel: { fontFamily: "Syne_600SemiBold", fontSize: 10, color: "#9B9690", letterSpacing: 0.3 },
+  navLabelActive: { fontFamily: "Syne_700Bold", fontSize: 10, color: "#1A1814", letterSpacing: 0.3 },
+  fab: { width: 60, height: 60, borderRadius: 30, backgroundColor: "#1A1814", justifyContent: "center", alignItems: "center", shadowColor: "#1A1814", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 8, marginBottom: 4 },
+  fabText: { fontSize: 32, color: "#3DFF8E", fontWeight: "300", lineHeight: 36 },
 });
