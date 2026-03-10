@@ -1,11 +1,18 @@
 import React from 'react';
-import MydrobeMVP3 from './MydrobeMVP3';
+import WardrobeScreen from './screens/WardrobeScreen';
 
 export default function App() {
-  return (
-    <div>
-      <h1>Welcome to MyDrobe MVP v3</h1>
-      <MydrobeMVP3 />
-    </div>
-  );
+  return <WardrobeScreen />;
 }
+```
+
+**Commit message:**
+```
+feat: point App.js to WardrobeScreen
+```
+
+**Description:**
+```
+Update App.js to import and render WardrobeScreen 
+as the root component. Removes old web-based 
+MydrobeMVP3 reference.
