@@ -1,5 +1,6 @@
 import { CormorantGaramond_400Regular_Italic, CormorantGaramond_600SemiBold } from "@expo-google-fonts/cormorant-garamond";
 import { Syne_600SemiBold, Syne_700Bold, Syne_800ExtraBold, useFonts } from "@expo-google-fonts/syne";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { ActivityIndicator, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -128,9 +129,10 @@ export default function HomeScreen() {
           <Text style={styles.navIconActive}>▦</Text>
           <Text style={styles.navLabelActive}>Wardrobe</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.fab}>
-          <Text style={styles.fabText}>+</Text>
-        </TouchableOpacity>
+<TouchableOpacity style={styles.fab} onPress={() => router.push("/(tabs)/add")}>
+  <Text style={styles.fabText}>+</Text>
+</TouchableOpacity>
+
         <TouchableOpacity style={styles.navBtn}>
           <Text style={styles.navIcon}>◉</Text>
           <Text style={styles.navLabel}>Profile</Text>
