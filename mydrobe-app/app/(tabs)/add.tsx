@@ -1,5 +1,6 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
     Alert, Image,
@@ -179,14 +180,14 @@ const clipBackground = async (imageUri) => {
           </View>
         </View>
 
-        {/* Clip button — the magic moment */}
+{/* Clip button — the magic moment */}
         <TouchableOpacity style={styles.clipBtn} activeOpacity={0.85}
           onPress={async () => {
-  const clipped = await clipBackground(photo);
-  if (clipped) {
-    setPhoto(clipped);
-    Alert.alert("✂️ Clipped!", "Background removed successfully!");
-  }
+            const clipped = await clipBackground(photo);
+            if (clipped) {
+              setPhoto(clipped);
+              router.push({ pathname: "/(tabs)/save", params: { photo: clipped } });
+            }
           }}>
           <Text style={styles.clipBtnText}>✂️ Clip Outfit</Text>
           <Text style={styles.clipBtnSub}>removes background instantly</Text>
