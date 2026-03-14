@@ -29,9 +29,18 @@ const DEFAULT_WARDROBES = ["Uni Fits", "Going Out", "Winter 24", "Everyday"];
 export default function SaveOutfitScreen() {
   const { photo } = useLocalSearchParams();
   const [outfitName, setOutfitName] = useState("");
-  const [selectedWardrobe, setSelectedWardrobe] = useState("Everyday");
+  const [selectedWardrobe, setSelectedWardrobe] = useState("Going Out");
   const [wardrobes, setWardrobes] = useState(DEFAULT_WARDROBES);
   const [saving, setSaving] = useState(false);
+
+  // Clear old data on first load
+  useEffect(() => {
+    const clearData = async () => {
+      await AsyncStorage.removeItem("outfits");
+      console.log("CLEARED ALL OUTFITS");
+    };
+    clearData();
+  }, []);
 
   useEffect(() => {
     loadWardrobes();
@@ -65,6 +74,8 @@ export default function SaveOutfitScreen() {
         photo: photo,
         savedAt: new Date().toISOString(),
       };
+
+      console.log("SAVING OUTFIT TO WARDROBE:", selectedWardrobe);
 
       // Load existing outfits
       const existing = await AsyncStorage.getItem("outfits");

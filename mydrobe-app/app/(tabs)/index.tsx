@@ -1,7 +1,8 @@
 import { CormorantGaramond_400Regular_Italic, CormorantGaramond_600SemiBold } from "@expo-google-fonts/cormorant-garamond";
 import { Syne_600SemiBold, Syne_700Bold, Syne_800ExtraBold, useFonts } from "@expo-google-fonts/syne";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const T = { bg: "#F7F5F0", surface: "#FFFFFF", card: "#FAFAF8", border: "#E8E4DC", ink: "#1A1814", muted: "#9B9690", lime: "#3DFF8E", tag: "#F0EDE6" };
@@ -30,7 +31,8 @@ function StickerFan({ colors }) {
 
 function WardrobeCard({ w }) {
   return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.82}>
+    <TouchableOpacity style={styles.card} activeOpacity={0.82} onPress={() => router.push({ pathname: "/(tabs)/wardrobe", params: { name: w.name } })}>
+
       <View style={styles.fanArea}>
         <StickerFan colors={w.colors} />
       </View>
@@ -51,12 +53,20 @@ export default function HomeScreen() {
   const [wardrobes] = useState(WARDROBES);
 
   const [fontsLoaded] = useFonts({
+    
     Syne_800ExtraBold,
     Syne_700Bold,
     Syne_600SemiBold,
     CormorantGaramond_400Regular_Italic,
     CormorantGaramond_600SemiBold,
   });
+useEffect(() => {
+    const clearOldData = async () => {
+      await AsyncStorage.removeItem("outfits");
+      console.log("CLEARED ALL OUTFITS FROM HOME SCREEN");
+    };
+    clearOldData();
+  }, []);
 
   if (!fontsLoaded) {
     return (
