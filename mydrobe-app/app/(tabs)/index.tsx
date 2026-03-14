@@ -79,6 +79,20 @@ export default function HomeScreen() {
     loadCounts();
   }, []);
 
+  useEffect(() => {
+  const checkOnboarding = async () => {
+    try {
+      const seen = await AsyncStorage.getItem("onboardingSeen");
+      if (!seen) {
+        router.replace("/(tabs)/onboarding");
+      }
+    } catch (e) {
+      console.log("Could not check onboarding");
+    }
+  };
+  checkOnboarding();
+}, []);
+
   if (!fontsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: T.bg }}>
