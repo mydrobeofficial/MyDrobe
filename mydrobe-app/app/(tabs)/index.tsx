@@ -8,10 +8,10 @@ import { ActivityIndicator, Platform, SafeAreaView, ScrollView, StatusBar, Style
 const T = { bg: "#F7F5F0", surface: "#FFFFFF", card: "#FAFAF8", border: "#E8E4DC", ink: "#1A1814", muted: "#9B9690", lime: "#3DFF8E", tag: "#F0EDE6" };
 
 const WARDROBES = [
-  { id: "1", name: "Uni Fits",  count: 14, privacy: "Private", colors: ["#4f4d49","#696256","#918978"] },
-  { id: "2", name: "Going Out", count: 8,  privacy: "Friends", colors: ["#1A1814","#2E2B26","#444038"] },
-  { id: "3", name: "Winter 24", count: 22, privacy: "Private", colors: ["#352517","#4d3b18","#685e4b"] },
-  { id: "4", name: "Everyday",  count: 31, privacy: "Public",  colors: ["#3c2c19","#645638","#aaa69e"] },
+  { id: "1", name: "Uni Fits",  count: 0, privacy: "Private", colors: ["#4f4d49","#696256","#918978"] },
+  { id: "2", name: "Going Out", count: 0, privacy: "Friends", colors: ["#1A1814","#2E2B26","#444038"] },
+  { id: "3", name: "Winter 24", count: 0, privacy: "Private", colors: ["#352517","#4d3b18","#685e4b"] },
+  { id: "4", name: "Everyday",  count: 0, privacy: "Public",  colors: ["#3c2c19","#645638","#aaa69e"] },
 ];
 
 function StickerFan({ colors }) {
@@ -50,22 +50,33 @@ function WardrobeCard({ w }) {
 }
 
 export default function HomeScreen() {
-  const [wardrobes] = useState(WARDROBES);
+  const [wardrobes, setWardrobes] = useState(WARDROBES);
 
   const [fontsLoaded] = useFonts({
-    
     Syne_800ExtraBold,
     Syne_700Bold,
     Syne_600SemiBold,
     CormorantGaramond_400Regular_Italic,
     CormorantGaramond_600SemiBold,
   });
-useEffect(() => {
-    const clearOldData = async () => {
-      await AsyncStorage.removeItem("outfits");
-      console.log("CLEARED ALL OUTFITS FROM HOME SCREEN");
+
+  useEffect(() => {
+    const loadCounts = async () => {
+      try {
+        const stored = await AsyncStorage.getItem("outfits");
+        if (stored) {
+          const all = JSON.parse(stored);
+          const updated = WARDROBES.map(w => ({
+            ...w,
+            count: all.filter((o: any) => o.wardrobe === w.name).length
+          }));
+          setWardrobes(updated);
+        }
+      } catch (e) {
+        console.log("Could not load counts");
+      }
     };
-    clearOldData();
+    loadCounts();
   }, []);
 
   if (!fontsLoaded) {
@@ -105,7 +116,7 @@ useEffect(() => {
         <View style={styles.sectionRow}>
           <Text style={styles.sectionLabel}>MY WARDROBES</Text>
           <View style={styles.limeBadge}>
-            <Text style={styles.limeBadgeText}>{WARDROBES.length} total</Text>
+            <Text style={styles.limeBadgeText}>{wardrobes.length} total</Text>
           </View>
         </View>
 
