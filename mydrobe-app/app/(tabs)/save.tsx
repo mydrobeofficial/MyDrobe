@@ -29,6 +29,7 @@ const DEFAULT_WARDROBES = ["Uni Fits", "Going Out", "Winter 24", "Everyday"];
 export default function SaveOutfitScreen() {
   const { photo } = useLocalSearchParams();
   const [outfitName, setOutfitName] = useState("");
+  const [outfitDescription, setOutfitDescription] = useState("");
   const [selectedWardrobe, setSelectedWardrobe] = useState("Going Out");
   const [wardrobes, setWardrobes] = useState(DEFAULT_WARDROBES);
   const [saving, setSaving] = useState(false);
@@ -69,6 +70,7 @@ export default function SaveOutfitScreen() {
       const outfit = {
         id: Date.now().toString(),
         name: outfitName.trim(),
+        description: outfitDescription.trim(),
         wardrobe: selectedWardrobe,
         photo: photo,
         savedAt: new Date().toISOString(),
@@ -129,6 +131,21 @@ export default function SaveOutfitScreen() {
           />
         </View>
 
+        {/* Outfit description */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>DESCRIPTION</Text>
+          <Text style={styles.descriptionHint}>Add details to help you search for this outfit later</Text>
+          <TextInput
+            style={[styles.input, styles.descriptionInput]}
+            placeholder="e.g. Comfy casual, good for coffee runs..."
+            placeholderTextColor={T.muted}
+            value={outfitDescription}
+            onChangeText={setOutfitDescription}
+            multiline
+            numberOfLines={4}
+          />
+        </View>
+
         {/* Pick wardrobe */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>SAVE TO WARDROBE</Text>
@@ -170,7 +187,9 @@ const styles = StyleSheet.create({
   photo:                  { width: "100%", height: 340 },
   section:                { marginBottom: 24 },
   sectionLabel:           { fontSize: 10, fontWeight: "700", color: T.muted, letterSpacing: 1.6, marginBottom: 10 },
+  descriptionHint:        { fontSize: 12, fontStyle: "italic", color: T.muted, marginBottom: 8 },
   input:                  { backgroundColor: T.surface, borderRadius: 14, borderWidth: 1, borderColor: T.border, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: T.ink },
+  descriptionInput:       { textAlignVertical: "top", paddingTop: 14 },
   wardrobeGrid:           { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   wardrobeChip:           { backgroundColor: T.surface, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, borderWidth: 1, borderColor: T.border },
   wardrobeChipActive:     { backgroundColor: T.ink, borderColor: T.ink },

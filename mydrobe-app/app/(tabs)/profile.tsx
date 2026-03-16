@@ -113,7 +113,7 @@ export default function ProfileScreen() {
         {/* Your Closet Section */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Your Closet</Text>
-          <Text style={styles.sectionSub}>All {totalOutfits} outfits</Text>
+<Text style={styles.sectionSub}>Every outfit in your closet, featuring all your clipped fits</Text>
 
           {allOutfits.length === 0 ? (
             <View style={styles.emptyState}>

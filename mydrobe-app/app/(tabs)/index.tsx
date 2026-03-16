@@ -108,7 +108,7 @@ function WardrobeCard({ w, onDelete }) {
 }
 
 export default function HomeScreen() {
-  const [wardrobes, setWardrobes] = useState(DEFAULT_WARDROBES);
+  const [wardrobes, setWardrobes] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newWardrobeName, setNewWardrobeName] = useState("");
   const [selectedColorPalette, setSelectedColorPalette] = useState(COLOR_PALETTES[0]);
@@ -132,19 +132,23 @@ export default function HomeScreen() {
       const stored = await AsyncStorage.getItem("wardrobes");
       if (stored) {
         const saved = JSON.parse(stored);
-        setWardrobes(saved);
+        
+        // Load outfit counts
+        const outfitsStored = await AsyncStorage.getItem("outfits");
+        if (outfitsStored) {
+          const all = JSON.parse(outfitsStored);
+          const updated = saved.map(w => ({
+            ...w,
+            count: all.filter((o: any) => o.wardrobe === w.name).length
+          }));
+          setWardrobes(updated);
+        } else {
+          setWardrobes(saved);
+        }
       } else {
+        // Only initialize defaults if wardrobes don't exist
         await AsyncStorage.setItem("wardrobes", JSON.stringify(DEFAULT_WARDROBES));
-      }
-      
-      const outfitsStored = await AsyncStorage.getItem("outfits");
-      if (outfitsStored) {
-        const all = JSON.parse(outfitsStored);
-        const updated = wardrobes.map(w => ({
-          ...w,
-          count: all.filter((o: any) => o.wardrobe === w.name).length
-        }));
-        setWardrobes(updated);
+        setWardrobes(DEFAULT_WARDROBES);
       }
     } catch (e) {
       console.log("Could not load wardrobes");
@@ -345,7 +349,7 @@ const styles = StyleSheet.create({
   streakBtn: { backgroundColor: "#1A1814", borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8 },
   streakBtnText: { fontFamily: "Syne_700Bold", fontSize: 11, color: "#3DFF8E", letterSpacing: 0.3 },
   
-// Modal
+  // Modal
   modalOverlay: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end", zIndex: 1000 },
   modal: { backgroundColor: T.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40, maxHeight: "90%" },
   modalTitle: { fontFamily: "Syne_800ExtraBold", fontSize: 20, color: T.ink, marginBottom: 16, letterSpacing: -0.3 },

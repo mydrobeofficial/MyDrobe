@@ -1,4 +1,5 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
+import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
@@ -78,6 +79,33 @@ export default function AddOutfitScreen() {
     } catch (error) {
       Alert.alert("Oops", "Could not remove background. Try again.");
       return null;
+    }
+  };
+
+  const addWhiteBackground = async (clippedImageUri) => {
+    try {
+      // Add white padding around the clipped image
+      const result = await ImageManipulator.manipulateAsync(
+        clippedImageUri,
+        [
+          {
+            resize: {
+              width: 500,
+              height: 600,
+            },
+          },
+        ],
+        {
+          compress: 0.9,
+          format: ImageManipulator.SaveFormat.PNG,
+          base64: true,
+        }
+      );
+
+      return result.uri;
+    } catch (error) {
+      console.log("Could not add background, continuing without it");
+      return clippedImageUri;
     }
   };
 
@@ -187,8 +215,8 @@ export default function AddOutfitScreen() {
           onPress={async () => {
             const clipped = await clipBackground(photo);
             if (clipped) {
-              setPhoto(clipped);
-              router.push({ pathname: "/(tabs)/save", params: { photo: clipped } });
+              const withBg = await addWhiteBackground(clipped);
+              router.push({ pathname: "/(tabs)/save", params: { photo: withBg } });
             }
           }}>
           <Text style={styles.clipBtnText}>✂️ Clip Outfit</Text>
