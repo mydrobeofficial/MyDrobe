@@ -168,10 +168,10 @@ export default function HomeScreen() {
   <Text style={styles.fabText}>+</Text>
 </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navBtn}>
-          <Text style={styles.navIcon}>◉</Text>
-          <Text style={styles.navLabel}>Profile</Text>
-        </TouchableOpacity>
+<TouchableOpacity style={styles.navBtn} onPress={() => router.push("/(tabs)/profile")}>
+  <Text style={styles.navIcon}>◉</Text>
+  <Text style={styles.navLabel}>Profile</Text>
+</TouchableOpacity>
       </View>
     </SafeAreaView>
   );
