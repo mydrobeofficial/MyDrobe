@@ -69,7 +69,7 @@ export default function ProfileScreen() {
   }
 
   const totalOutfits = outfits.length;
-  const recentOutfits = outfits.slice(-6).reverse();
+  const allOutfits = [...outfits].reverse();
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
@@ -110,19 +110,20 @@ export default function ProfileScreen() {
         {/* Divider */}
         <View style={styles.divider} />
 
-        {/* Recent Outfits Section */}
+        {/* Your Closet Section */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Recent Outfits</Text>
+          <Text style={styles.sectionTitle}>Your Closet</Text>
+          <Text style={styles.sectionSub}>All {totalOutfits} outfits</Text>
 
-          {recentOutfits.length === 0 ? (
+          {allOutfits.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>✨</Text>
-              <Text style={styles.emptyTitle}>No outfits yet</Text>
-              <Text style={styles.emptySub}>Start building your wardrobe by clipping your first outfit</Text>
+              <Text style={styles.emptyTitle}>Start your closet</Text>
+              <Text style={styles.emptySub}>Every outfit you clip gets saved here</Text>
             </View>
           ) : (
             <View style={styles.grid}>
-              {recentOutfits.map((outfit: any) => (
+              {allOutfits.map((outfit: any) => (
                 <View key={outfit.id} style={styles.card}>
                   <View style={styles.photoWrap}>
                     <View style={{ width: "100%", height: "100%", backgroundColor: T.tag, justifyContent: "center", alignItems: "center" }}>
@@ -240,11 +241,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   sectionTitle: {
-    fontFamily: "Syne_700Bold",
-    fontSize: 16,
+    fontFamily: "Syne_800ExtraBold",
+    fontSize: 18,
     color: T.ink,
-    marginBottom: 14,
-    letterSpacing: -0.2,
+    marginBottom: 4,
+    letterSpacing: -0.3,
+  },
+  sectionSub: {
+    fontFamily: "CormorantGaramond_400Regular_Italic",
+    fontSize: 13,
+    color: T.muted,
+    marginBottom: 16,
   },
   emptyState: {
     alignItems: "center",
