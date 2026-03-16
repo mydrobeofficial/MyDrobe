@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import {
     Alert,
     Image,
-    SafeAreaView,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -13,6 +12,7 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const T = {
   bg:      "#F7F5F0",
@@ -33,7 +33,6 @@ export default function SaveOutfitScreen() {
   const [wardrobes, setWardrobes] = useState(DEFAULT_WARDROBES);
   const [saving, setSaving] = useState(false);
 
-  // Clear old data on first load
   useEffect(() => {
     const clearData = async () => {
       await AsyncStorage.removeItem("outfits");
@@ -96,7 +95,7 @@ export default function SaveOutfitScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="dark-content" />
 
       {/* Header */}

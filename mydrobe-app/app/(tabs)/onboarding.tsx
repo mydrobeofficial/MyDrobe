@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    SafeAreaView,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -10,6 +9,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const T = {
   bg: "#F7F5F0",
@@ -42,25 +42,25 @@ const SLIDES = [
 export default function OnboardingScreen() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-const goToNext = async () => {
-  if (currentSlide < SLIDES.length - 1) {
-    setCurrentSlide(currentSlide + 1);
-  } else {
+  const goToNext = async () => {
+    if (currentSlide < SLIDES.length - 1) {
+      setCurrentSlide(currentSlide + 1);
+    } else {
+      await AsyncStorage.setItem("onboardingSeen", "true");
+      router.replace("/(tabs)/");
+    }
+  };
+
+  const skip = async () => {
     await AsyncStorage.setItem("onboardingSeen", "true");
     router.replace("/(tabs)/");
-  }
-};
-
-const skip = async () => {
-  await AsyncStorage.setItem("onboardingSeen", "true");
-  router.replace("/(tabs)/");
-};
+  };
 
   const slide = SLIDES[currentSlide];
   const isLastSlide = currentSlide === SLIDES.length - 1;
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar barStyle="dark-content" />
 
       {/* Skip button */}

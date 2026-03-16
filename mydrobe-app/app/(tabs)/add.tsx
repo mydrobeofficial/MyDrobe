@@ -4,13 +4,13 @@ import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
     Alert, Image,
-    SafeAreaView,
     ScrollView,
     StatusBar,
     StyleSheet,
     Text, TouchableOpacity,
     View
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const T = {
   bg:      "#F7F5F0",
@@ -25,17 +25,16 @@ const T = {
 export default function AddOutfitScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState(null);
-  const [step, setStep] = useState("camera"); // camera | preview
+  const [step, setStep] = useState("camera");
   const cameraRef = useRef(null);
 
-  // Handle no permission
   if (!permission) {
     return <View style={styles.safe} />;
   }
 
   if (!permission.granted) {
     return (
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
         <View style={styles.permBox}>
           <Text style={styles.permTitle}>Camera Access</Text>
           <Text style={styles.permSub}>MyDrobe needs camera access to clip your outfits.</Text>
@@ -46,40 +45,41 @@ export default function AddOutfitScreen() {
       </SafeAreaView>
     );
   }
-const clipBackground = async (imageUri) => {
-  try {
-    const formData = new FormData();
-    formData.append("image_file", {
-      uri: imageUri,
-      type: "image/jpeg",
-      name: "outfit.jpg",
-    } as any);
-    formData.append("size", "auto");
 
-    const response = await fetch("https://api.remove.bg/v1.0/removebg", {
-      method: "POST",
-      headers: {
-        "X-Api-Key": process.env.EXPO_PUBLIC_REMOVEBG_API_KEY,
-      },
-      body: formData,
-    });
+  const clipBackground = async (imageUri) => {
+    try {
+      const formData = new FormData();
+      formData.append("image_file", {
+        uri: imageUri,
+        type: "image/jpeg",
+        name: "outfit.jpg",
+      } as any);
+      formData.append("size", "auto");
 
-    if (!response.ok) {
-      throw new Error("Background removal failed");
+      const response = await fetch("https://api.remove.bg/v1.0/removebg", {
+        method: "POST",
+        headers: {
+          "X-Api-Key": process.env.EXPO_PUBLIC_REMOVEBG_API_KEY,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Background removal failed");
+      }
+
+      const blob = await response.blob();
+      const reader = new FileReader();
+      return new Promise((resolve, reject) => {
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      Alert.alert("Oops", "Could not remove background. Try again.");
+      return null;
     }
-
-    const blob = await response.blob();
-    const reader = new FileReader();
-    return new Promise((resolve, reject) => {
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  } catch (error) {
-    Alert.alert("Oops", "Could not remove background. Try again.");
-    return null;
-  }
-};
+  };
 
   const takePhoto = async () => {
     if (cameraRef.current) {
@@ -105,7 +105,7 @@ const clipBackground = async (imageUri) => {
     setStep("camera");
   };
 
-// STEP 1 — Camera
+  // STEP 1 — Camera
   if (step === "camera") {
     return (
       <View style={styles.cameraContainer}>
@@ -113,7 +113,7 @@ const clipBackground = async (imageUri) => {
         <CameraView style={styles.camera} facing="back" ref={cameraRef}>
 
           {/* Top bar */}
-          <SafeAreaView>
+          <SafeAreaView style={styles.camTopSafe} edges={['top', 'left', 'right']}>
             <View style={styles.camTopBar}>
               <TouchableOpacity onPress={() => router.back()}>
                 <Text style={styles.camBackBtn}>← Back</Text>
@@ -123,7 +123,6 @@ const clipBackground = async (imageUri) => {
               </View>
             </View>
           </SafeAreaView>
-        
 
           {/* Silhouette guide */}
           <View style={styles.silhouetteGuide}>
@@ -131,7 +130,7 @@ const clipBackground = async (imageUri) => {
           </View>
 
           {/* Bottom controls */}
-          <SafeAreaView style={styles.camBottom}>
+          <SafeAreaView style={styles.camBottomSafe} edges={['bottom', 'left', 'right']}>
             <View style={styles.camControls}>
 
               {/* Gallery */}
@@ -161,7 +160,7 @@ const clipBackground = async (imageUri) => {
 
   // STEP 2 — Preview
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="dark-content" />
 
       {/* Header */}
@@ -183,7 +182,7 @@ const clipBackground = async (imageUri) => {
           </View>
         </View>
 
-{/* Clip button — the magic moment */}
+        {/* Clip button */}
         <TouchableOpacity style={styles.clipBtn} activeOpacity={0.85}
           onPress={async () => {
             const clipped = await clipBackground(photo);
@@ -210,13 +209,14 @@ const styles = StyleSheet.create({
   safe:              { flex: 1, backgroundColor: T.bg },
   cameraContainer:   { flex: 1, backgroundColor: "#000" },
   camera:            { flex: 1 },
-  camTopBar:         { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingTop: 10 },
-  camTitle:          { color: "#FFFFFF", fontSize: 18, fontWeight: "800", letterSpacing: -0.5 },
+  camTopSafe:        { backgroundColor: "rgba(0,0,0,0.3)" },
+  camTopBar:         { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 10 },
+  camBackBtn:        { color: "#FFFFFF", fontSize: 14, fontWeight: "600" },
   tipChip:           { backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5 },
   tipText:           { color: "#FFFFFF", fontSize: 11, fontWeight: "600" },
   silhouetteGuide:   { flex: 1, justifyContent: "center", alignItems: "center" },
   silhouetteOutline: { width: 180, height: 320, borderRadius: 90, borderWidth: 2, borderColor: "rgba(255,255,255,0.3)", borderStyle: "dashed" },
-  camBottom:         { paddingBottom: 20 },
+  camBottomSafe:     { backgroundColor: "rgba(0,0,0,0.3)" },
   camControls:       { flexDirection: "row", justifyContent: "space-around", alignItems: "center", paddingHorizontal: 30, paddingVertical: 20 },
   galleryBtn:        { alignItems: "center", width: 60 },
   galleryIcon:       { fontSize: 28, color: "#FFFFFF", marginBottom: 4 },
@@ -241,5 +241,4 @@ const styles = StyleSheet.create({
   permSub:           { fontSize: 15, color: T.muted, textAlign: "center", marginBottom: 30, lineHeight: 22 },
   permBtn:           { backgroundColor: T.ink, borderRadius: 14, paddingHorizontal: 30, paddingVertical: 16 },
   permBtnText:       { color: T.lime, fontSize: 15, fontWeight: "800" },
-  camBackBtn:        { color: "#FFFFFF", fontSize: 14, fontWeight: "600" },
 });

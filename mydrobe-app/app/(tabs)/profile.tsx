@@ -5,13 +5,13 @@ import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
     Dimensions,
-    SafeAreaView,
     ScrollView,
     StatusBar,
     StyleSheet,
     Text,
     View
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const T = {
   bg: "#F7F5F0",
@@ -72,7 +72,7 @@ export default function ProfileScreen() {
   const recentOutfits = outfits.slice(-6).reverse();
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="dark-content" />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
