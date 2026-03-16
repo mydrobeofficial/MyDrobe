@@ -1,18 +1,16 @@
 import { CormorantGaramond_400Regular_Italic } from "@expo-google-fonts/cormorant-garamond";
 import { Syne_600SemiBold, Syne_700Bold, Syne_800ExtraBold, useFonts } from "@expo-google-fonts/syne";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
     Dimensions,
-    Image,
     SafeAreaView,
     ScrollView,
     StatusBar,
     StyleSheet,
     Text,
-    TouchableOpacity,
-    View,
+    View
 } from "react-native";
 
 const T = {
@@ -52,7 +50,6 @@ export default function ProfileScreen() {
         const all = JSON.parse(stored);
         setOutfits(all);
 
-        // Calculate streak (simple version: count consecutive days with outfits)
         const today = new Date().toDateString();
         const lastOutfitDate = all.length > 0 
           ? new Date(all[all.length - 1].savedAt).toDateString() 
@@ -78,59 +75,66 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Profile</Text>
-          <Text style={styles.headerSub}>your style history</Text>
-        </View>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarLetter}>M</Text>
-        </View>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Stats */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{totalOutfits}</Text>
-            <Text style={styles.statLabel}>Outfits</Text>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        
+        {/* Profile Card */}
+        <View style={styles.profileCard}>
+          {/* Big Avatar */}
+          <View style={styles.bigAvatar}>
+            <Text style={styles.bigAvatarLetter}>M</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>🔥</Text>
-            <Text style={styles.statLabel}>{streak} day streak</Text>
+
+          {/* User name */}
+          <Text style={styles.userName}>MyDrobe User</Text>
+          <Text style={styles.userTagline}>building your style vault</Text>
+
+          {/* Stats Row */}
+          <View style={styles.statsRow}>
+            <View style={styles.miniStat}>
+              <Text style={styles.miniStatNumber}>{totalOutfits}</Text>
+              <Text style={styles.miniStatLabel}>Outfits</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.miniStat}>
+              <Text style={styles.miniStatNumber}>🔥</Text>
+              <Text style={styles.miniStatLabel}>{streak} day</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.miniStat}>
+              <Text style={styles.miniStatNumber}>4</Text>
+              <Text style={styles.miniStatLabel}>Wardrobes</Text>
+            </View>
           </View>
         </View>
 
-        {/* History section */}
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* Recent Outfits Section */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Outfit History</Text>
+          <Text style={styles.sectionTitle}>Recent Outfits</Text>
 
           {recentOutfits.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyEmoji}>👗</Text>
-              <Text style={styles.emptyText}>No outfits yet</Text>
-              <TouchableOpacity 
-                style={styles.emptyBtn}
-                onPress={() => router.push("/(tabs)/add")}
-              >
-                <Text style={styles.emptyBtnText}>+ Add your first outfit</Text>
-              </TouchableOpacity>
+              <Text style={styles.emptyEmoji}>✨</Text>
+              <Text style={styles.emptyTitle}>No outfits yet</Text>
+              <Text style={styles.emptySub}>Start building your wardrobe by clipping your first outfit</Text>
             </View>
           ) : (
             <View style={styles.grid}>
               {recentOutfits.map((outfit: any) => (
                 <View key={outfit.id} style={styles.card}>
                   <View style={styles.photoWrap}>
-                    <Image
-                      source={{ uri: outfit.photo }}
-                      style={styles.photo}
-                      resizeMode="contain"
-                    />
+                    <View style={{ width: "100%", height: "100%", backgroundColor: T.tag, justifyContent: "center", alignItems: "center" }}>
+                      <Text style={{ fontSize: 40 }}>👗</Text>
+                    </View>
                   </View>
                   <View style={styles.cardBody}>
                     <Text style={styles.cardName} numberOfLines={1}>
                       {outfit.name}
+                    </Text>
+                    <Text style={styles.cardWardrobe} numberOfLines={1}>
+                      {outfit.wardrobe}
                     </Text>
                     <Text style={styles.cardDate}>
                       {new Date(outfit.savedAt).toLocaleDateString("en-GB", {
@@ -144,107 +148,122 @@ export default function ProfileScreen() {
             </View>
           )}
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: T.surface },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  safe: { flex: 1, backgroundColor: T.bg },
+  content: { paddingBottom: 60 },
+  
+  // Profile Card
+  profileCard: {
+    backgroundColor: T.surface,
+    marginHorizontal: 0,
+    paddingVertical: 40,
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: T.border,
   },
-  headerTitle: {
-    fontFamily: "Syne_800ExtraBold",
-    fontSize: 24,
-    color: T.ink,
-    letterSpacing: -0.5,
-  },
-  headerSub: {
-    fontFamily: "CormorantGaramond_400Regular_Italic",
-    fontSize: 13,
-    color: T.muted,
-    marginTop: 2,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  bigAvatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: T.lime,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
   },
-  avatarLetter: {
+  bigAvatarLetter: {
     fontFamily: "Syne_800ExtraBold",
-    fontSize: 16,
+    fontSize: 44,
     color: T.ink,
   },
-  content: { padding: 20, paddingBottom: 60 },
-  statsContainer: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 28,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: T.surface,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: T.border,
-    padding: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-  },
-  statNumber: {
+  userName: {
     fontFamily: "Syne_800ExtraBold",
     fontSize: 28,
     color: T.ink,
+    marginBottom: 6,
+    letterSpacing: -0.5,
+  },
+  userTagline: {
+    fontFamily: "CormorantGaramond_400Regular_Italic",
+    fontSize: 14,
+    color: T.muted,
+    marginBottom: 28,
+  },
+  statsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  miniStat: {
+    alignItems: "center",
+    flex: 1,
+  },
+  miniStatNumber: {
+    fontFamily: "Syne_800ExtraBold",
+    fontSize: 20,
+    color: T.ink,
     marginBottom: 4,
   },
-  statLabel: {
+  miniStatLabel: {
     fontFamily: "Syne_600SemiBold",
-    fontSize: 11,
+    fontSize: 10,
     color: T.muted,
     letterSpacing: 0.3,
   },
-  sectionContainer: { marginBottom: 24 },
+  statDivider: {
+    width: 1,
+    height: 30,
+    backgroundColor: T.border,
+    marginHorizontal: 16,
+  },
+  
+  divider: {
+    height: 1,
+    backgroundColor: T.border,
+    marginVertical: 24,
+    marginHorizontal: 20,
+  },
+
+  sectionContainer: {
+    paddingHorizontal: 20,
+  },
   sectionTitle: {
     fontFamily: "Syne_700Bold",
-    fontSize: 14,
+    fontSize: 16,
     color: T.ink,
     marginBottom: 14,
     letterSpacing: -0.2,
   },
   emptyState: {
     alignItems: "center",
-    paddingVertical: 40,
+    paddingVertical: 50,
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
-  emptyText: {
+  emptyEmoji: { fontSize: 52, marginBottom: 16 },
+  emptyTitle: {
     fontFamily: "Syne_700Bold",
-    fontSize: 16,
+    fontSize: 18,
     color: T.ink,
-    marginBottom: 16,
+    marginBottom: 8,
   },
-  emptyBtn: {
-    backgroundColor: T.ink,
-    borderRadius: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  emptyBtnText: {
-    fontFamily: "Syne_700Bold",
-    fontSize: 13,
-    color: T.lime,
+  emptySub: {
+    fontFamily: "CormorantGaramond_400Regular_Italic",
+    fontSize: 14,
+    color: T.muted,
+    textAlign: "center",
+    lineHeight: 20,
+    maxWidth: 240,
   },
   grid: {
     flexDirection: "row",
@@ -255,7 +274,7 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_SIZE,
     backgroundColor: T.surface,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: T.border,
     overflow: "hidden",
@@ -263,20 +282,24 @@ const styles = StyleSheet.create({
   photoWrap: {
     height: CARD_SIZE * 1.2,
     backgroundColor: T.tag,
-    justifyContent: "center",
-    alignItems: "center",
   },
-  photo: { width: "100%", height: "100%" },
-  cardBody: { padding: 10 },
+  cardBody: { padding: 12 },
   cardName: {
     fontFamily: "Syne_700Bold",
-    fontSize: 12,
+    fontSize: 13,
     color: T.ink,
-    marginBottom: 3,
+    marginBottom: 2,
+  },
+  cardWardrobe: {
+    fontFamily: "Syne_600SemiBold",
+    fontSize: 10,
+    color: T.muted,
+    marginBottom: 4,
   },
   cardDate: {
     fontFamily: "Syne_600SemiBold",
     fontSize: 10,
     color: T.muted,
+    letterSpacing: 0.2,
   },
 });
