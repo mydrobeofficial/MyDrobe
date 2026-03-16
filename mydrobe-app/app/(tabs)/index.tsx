@@ -3,7 +3,7 @@ import { Syne_600SemiBold, Syne_700Bold, Syne_800ExtraBold, useFonts } from "@ex
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const T = { bg: "#F7F5F0", surface: "#FFFFFF", card: "#FAFAF8", border: "#E8E4DC", ink: "#1A1814", muted: "#9B9690", lime: "#3DFF8E", tag: "#F0EDE6" };
 
@@ -32,7 +32,6 @@ function StickerFan({ colors }) {
 function WardrobeCard({ w }) {
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.82} onPress={() => router.push({ pathname: "/(tabs)/wardrobe", params: { name: w.name } })}>
-
       <View style={styles.fanArea}>
         <StickerFan colors={w.colors} />
       </View>
@@ -80,18 +79,18 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-  const checkOnboarding = async () => {
-    try {
-      const seen = await AsyncStorage.getItem("onboardingSeen");
-      if (!seen) {
-        router.replace("/(tabs)/onboarding");
+    const checkOnboarding = async () => {
+      try {
+        const seen = await AsyncStorage.getItem("onboardingSeen");
+        if (!seen) {
+          router.replace("/(tabs)/onboarding");
+        }
+      } catch (e) {
+        console.log("Could not check onboarding");
       }
-    } catch (e) {
-      console.log("Could not check onboarding");
-    }
-  };
-  checkOnboarding();
-}, []);
+    };
+    checkOnboarding();
+  }, []);
 
   if (!fontsLoaded) {
     return (
@@ -109,14 +108,12 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-  <Text style={styles.wordmark}>MyDrobe</Text>
-  <View style={{ backgroundColor: "#3DFF8E", borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3 }}>
-    <Text style={{ fontFamily: "Syne_700Bold", fontSize: 10, color: "#1A1814", letterSpacing: 0.5 }}>PHASE 1</Text>
-  </View>
-</View>
-<Text style={styles.tagline}>your wardrobe, made seen.</Text>
-         
-         
+            <Text style={styles.wordmark}>MyDrobe</Text>
+            <View style={{ backgroundColor: "#3DFF8E", borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3 }}>
+              <Text style={{ fontFamily: "Syne_700Bold", fontSize: 10, color: "#1A1814", letterSpacing: 0.5 }}>PHASE 1</Text>
+            </View>
+          </View>
+          <Text style={styles.tagline}>your wardrobe, made seen.</Text>
         </View>
         <View style={styles.avatar}>
           <Text style={styles.avatarLetter}>M</Text>
@@ -157,22 +154,6 @@ export default function HomeScreen() {
         </View>
 
       </ScrollView>
-
-      {/* Bottom Nav */}
-      <View style={styles.nav}>
-        <TouchableOpacity style={styles.navBtn}>
-          <Text style={styles.navIconActive}>▦</Text>
-          <Text style={styles.navLabelActive}>Wardrobe</Text>
-        </TouchableOpacity>
-<TouchableOpacity style={styles.fab} onPress={() => router.push("/(tabs)/add")}>
-  <Text style={styles.fabText}>+</Text>
-</TouchableOpacity>
-
-<TouchableOpacity style={styles.navBtn} onPress={() => router.push("/(tabs)/profile")}>
-  <Text style={styles.navIcon}>◉</Text>
-  <Text style={styles.navLabel}>Profile</Text>
-</TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }
@@ -213,12 +194,4 @@ const styles = StyleSheet.create({
   streakSub: { fontFamily: "CormorantGaramond_400Regular_Italic", fontSize: 13, color: "#9B9690" },
   streakBtn: { backgroundColor: "#1A1814", borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8 },
   streakBtnText: { fontFamily: "Syne_700Bold", fontSize: 11, color: "#3DFF8E", letterSpacing: 0.3 },
-  nav: { flexDirection: "row", justifyContent: "space-around", alignItems: "center", paddingTop: 12, paddingBottom: Platform.OS === "ios" ? 28 : 16, paddingHorizontal: 24, borderTopWidth: 1, borderTopColor: "#E8E4DC", backgroundColor: "#FFFFFF" },
-  navBtn: { alignItems: "center", flex: 1 },
-  navIcon: { fontSize: 22, color: "#9B9690", marginBottom: 3 },
-  navIconActive: { fontSize: 22, color: "#1A1814", marginBottom: 3 },
-  navLabel: { fontFamily: "Syne_600SemiBold", fontSize: 10, color: "#9B9690", letterSpacing: 0.3 },
-  navLabelActive: { fontFamily: "Syne_700Bold", fontSize: 10, color: "#1A1814", letterSpacing: 0.3 },
-  fab: { width: 60, height: 60, borderRadius: 30, backgroundColor: "#1A1814", justifyContent: "center", alignItems: "center", shadowColor: "#1A1814", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 8, marginBottom: 4 },
-  fabText: { fontSize: 32, color: "#3DFF8E", fontWeight: "300", lineHeight: 36 },
 });
