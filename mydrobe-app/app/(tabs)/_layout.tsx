@@ -46,6 +46,7 @@ export default function TabLayout() {
         options={{
           title: "Add",
           tabBarLabel: "",
+          tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => (
             <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: T.ink, justifyContent: "center", alignItems: "center", marginBottom: 20 }}>
               <Text style={{ fontSize: 32, color: T.lime, fontWeight: "300" }}>+</Text>

@@ -105,7 +105,7 @@ const clipBackground = async (imageUri) => {
     setStep("camera");
   };
 
-  // STEP 1 — Camera
+// STEP 1 — Camera
   if (step === "camera") {
     return (
       <View style={styles.cameraContainer}>
@@ -115,12 +115,15 @@ const clipBackground = async (imageUri) => {
           {/* Top bar */}
           <SafeAreaView>
             <View style={styles.camTopBar}>
-              <Text style={styles.camTitle}>Add Outfit</Text>
+              <TouchableOpacity onPress={() => router.back()}>
+                <Text style={styles.camBackBtn}>← Back</Text>
+              </TouchableOpacity>
               <View style={styles.tipChip}>
                 <Text style={styles.tipText}>Plain bg = cleaner clip</Text>
               </View>
             </View>
           </SafeAreaView>
+        
 
           {/* Silhouette guide */}
           <View style={styles.silhouetteGuide}>
@@ -238,4 +241,5 @@ const styles = StyleSheet.create({
   permSub:           { fontSize: 15, color: T.muted, textAlign: "center", marginBottom: 30, lineHeight: 22 },
   permBtn:           { backgroundColor: T.ink, borderRadius: 14, paddingHorizontal: 30, paddingVertical: 16 },
   permBtnText:       { color: T.lime, fontSize: 15, fontWeight: "800" },
+  camBackBtn:        { color: "#FFFFFF", fontSize: 14, fontWeight: "600" },
 });
